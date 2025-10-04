@@ -6,7 +6,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
@@ -69,7 +68,7 @@
             </HBox>
             <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="59.0" prefWidth="195.0">
                <children>
-                  <ComboBox fx:id="loanScheduleCombo" prefHeight="25.0" prefWidth="154.0" promptText="grąžinimo grafikas" visibleRowCount="2" />
+                  <ComboBox fx:id="loanScheduleCombo" prefHeight="25.0" prefWidth="154.0" promptText="grąžinimo grafikas..." visibleRowCount="2" />
                </children>
                <padding>
                   <Insets left="10.0" right="10.0" />
@@ -100,16 +99,7 @@
                   <Insets right="10.0" />
                </padding>
             </ButtonBar>
-            <TableView prefHeight="410.0" prefWidth="658.0">
-              <columns>
-                  <TableColumn prefWidth="28.0" text="#" />
-                <TableColumn prefWidth="75.0" text="Metai" />
-                <TableColumn prefWidth="81.0" text="Mėnuo" />
-                  <TableColumn prefWidth="40.0" text="\%" />
-                  <TableColumn prefWidth="114.0" text="Palūkanos" />
-                  <TableColumn prefWidth="143.0" text="Įmoka" />
-                  <TableColumn prefWidth="150.0" text="Viso" />
-              </columns>
+            <TableView fx:id="loanPaymentTable" prefHeight="410.0" prefWidth="658.0">
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
