@@ -66,10 +66,13 @@
                   <Insets left="10.0" right="10.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="59.0" prefWidth="195.0">
+            <VBox alignment="CENTER" prefHeight="75.0" prefWidth="195.0">
                <children>
-                  <ComboBox fx:id="loanScheduleCombo" prefHeight="25.0" prefWidth="154.0" promptText="grąžinimo grafikas..." visibleRowCount="2" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="195.0" text="Grąžinimo grafikas" wrapText="true" />
+                  <ComboBox fx:id="loanScheduleCombo" prefHeight="25.0" prefWidth="154.0" visibleRowCount="2" />
                </children>
+            </VBox>
+            <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="59.0" prefWidth="195.0">
                <padding>
                   <Insets left="10.0" right="10.0" />
                </padding>
@@ -91,6 +94,11 @@
             </Label>
             <ButtonBar prefHeight="40.0" prefWidth="200.0">
               <buttons>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Label contentDisplay="CENTER" prefHeight="17.0" prefWidth="125.0" text="Filtruoti" />
+                     </children>
+                  </HBox>
                 <Button disable="true" mnemonicParsing="false" text="Atidėti" />
                   <Button disable="true" mnemonicParsing="false" text="Grafikas" />
                   <Button disable="true" mnemonicParsing="false" text="Eksportuoti" />

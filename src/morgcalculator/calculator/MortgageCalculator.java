@@ -1,9 +1,81 @@
 package morgcalculator.calculator;
 
-public class MortgageCalculator {
+import java.util.List;
 
-	private enum Schedule {
-		ANNUITY, LINEAR
+public class MortgageCalculator {
+	public static enum Schedule {
+		ANNUITY, LINEAR;
 	};
 
+	private float loanAmount;
+	private float yearlyRate;
+	private int loanTermYear;
+	private int loanTermMonth;
+
+	public MortgageCalculator(float loanAmount, float yearlyRate, int loanTermYear, int loanTermMonth) {
+		this.loanAmount = loanAmount;
+		this.yearlyRate = yearlyRate;
+		this.loanTermYear = loanTermYear;
+		this.loanTermMonth = loanTermMonth;
+	}
+
+	public float getLoanAmount() {
+		return loanAmount;
+	}
+
+	public void setLoanAmount(float loanAmount) {
+		if (loanAmount <= 0) {
+			throw new IllegalArgumentException("laon amount > 0");
+		}
+		this.loanAmount = loanAmount;
+	}
+
+	public float getYearlyRate() {
+		return yearlyRate;
+	}
+
+	public void setYearlyRate(float yearlyRate) {
+		this.yearlyRate = yearlyRate;
+	}
+
+	public int getLoanTermYear() {
+		return loanTermYear;
+	}
+
+	public void setLoanTermYear(int loanTermYear) {
+		this.loanTermYear = loanTermYear;
+	}
+
+	public int getLoanTermMonth() {
+		return loanTermMonth;
+	}
+
+	public void setLoanTermMonth(int loanTermMonth) {
+		this.loanTermMonth = loanTermMonth;
+	}
+
+	// Other
+	public static Schedule getSchedule(int type) {
+		if (type == 0) {
+			return Schedule.ANNUITY;
+		} else if (type == 1) {
+			return Schedule.LINEAR;
+		}
+		return null;
+	}
+
+	protected float getRateForPeriod() {
+		return yearlyRate / 100 / 12;
+	}
+
+	protected int getNumberOfPeriods() {
+		return loanTermYear * 12 + loanTermMonth;
+	}
+
+	public List<Payment> calculatePayments() {
+
+		System.out.println("In mortgage");
+		return null;
+		// Meant to be overrided
+	}
 }

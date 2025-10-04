@@ -1,5 +1,7 @@
 package morgcalculator.main;
 
+import java.util.List;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,6 +12,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import morgcalculator.calculator.AnnuityCalculator;
+import morgcalculator.calculator.LinearCalculator;
+import morgcalculator.calculator.MortgageCalculator;
 import morgcalculator.calculator.Payment;
 
 public class LandingController {
@@ -30,18 +35,20 @@ public class LandingController {
 	@FXML
 	private TableView loanPaymentTable;
 
+	public MortgageCalculator calculator;
+
 	@FXML
 	private void handleCalculateAction(ActionEvent event) {
 		Float loanAmount = null;
 		Integer loanTermYear = null;
 		Integer loanTermMonths = null;
 		Float loanYearlyRate = null;
-		Integer loanSchedule = loanScheduleCombo.getSelectionModel().getSelectedIndex();
+		int loanSchedule = loanScheduleCombo.getSelectionModel().getSelectedIndex();
 		try {
 			loanAmount = Float.valueOf(loanAmountField.getText());
+			loanYearlyRate = Float.valueOf(loanYearlyRateField.getText());
 			loanTermYear = Integer.valueOf(loanTermYearField.getText());
 			loanTermMonths = Integer.valueOf(loanTermMonthsField.getText());
-			loanYearlyRate = Float.valueOf(loanYearlyRateField.getText());
 		} catch (NumberFormatException e) {
 			errorText.setFill(Color.FIREBRICK);
 			errorText.setText("Įvestis gali būti tik skaičiai!");
@@ -64,9 +71,24 @@ public class LandingController {
 			errorText.setText("");
 		}
 
-		Payment p = new Payment(1, 2025, 12, 0.6f, 123.3f, 200f, 300f);
+		MortgageCalculator.Schedule schedule = MortgageCalculator.getSchedule(loanSchedule);
 
-		loanPaymentTable.getItems().add(p);
+		if (MortgageCalculator.Schedule.ANNUITY == schedule) {
+			calculator = new AnnuityCalculator(loanAmount, loanYearlyRate, loanTermYear, loanTermMonths);
+		} else if (MortgageCalculator.Schedule.LINEAR == schedule) {
+			calculator = new LinearCalculator(loanAmount, loanYearlyRate, loanTermYear, loanTermMonths);
+		}
+
+		if (calculator == null) {
+			throw new NullPointerException("no calculator");
+		}
+
+		List<Payment> payments = calculator.calculatePayments();
+
+		if (!loanPaymentTable.getItems().isEmpty()) {
+			loanPaymentTable.getItems().removeAll(payments);
+		}
+		loanPaymentTable.getItems().addAll(payments);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -75,6 +97,7 @@ public class LandingController {
 		// ComboBox
 		loanScheduleCombo.getItems().removeAll(loanScheduleCombo.getItems());
 		loanScheduleCombo.getItems().addAll("Anuiteto", "Linijinis");
+		loanScheduleCombo.getSelectionModel().selectFirst();
 
 		// PaymentTable
 		TableColumn idCol = new TableColumn("#");
@@ -100,4 +123,5 @@ public class LandingController {
 
 		loanPaymentTable.getColumns().addAll(idCol, yearCol, monthCol, percentCol, interestCol, paymentCol, totalCol);
 	}
+
 }
