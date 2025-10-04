@@ -115,13 +115,14 @@ public class LandingController {
 		TableColumn interestCol = new TableColumn("Palūkanos");
 		interestCol.setCellValueFactory(new PropertyValueFactory<>("interest"));
 
-		TableColumn paymentCol = new TableColumn("Įmoka");
-		paymentCol.setCellValueFactory(new PropertyValueFactory<>("payment"));
+		TableColumn periodPaymentCol = new TableColumn("Įmoka");
+		periodPaymentCol.setCellValueFactory(new PropertyValueFactory<>("periodPayment"));
 
 		TableColumn totalCol = new TableColumn("Viso");
 		totalCol.setCellValueFactory(new PropertyValueFactory<>("totalPayment"));
 
-		loanPaymentTable.getColumns().addAll(idCol, yearCol, monthCol, percentCol, interestCol, paymentCol, totalCol);
+		loanPaymentTable.getColumns().addAll(idCol, yearCol, monthCol, percentCol, interestCol, periodPaymentCol,
+				totalCol);
 	}
 
 }
