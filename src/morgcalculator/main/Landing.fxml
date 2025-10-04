@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -11,15 +12,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<SplitPane dividerPositions="0.23050058207217694" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="492.0" prefWidth="861.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<SplitPane dividerPositions="0.23050058207217694" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="492.0" prefWidth="861.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="morgcalculator.main.LandingController">
    <items>
       <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="490.0" prefWidth="195.0" spacing="10.0" SplitPane.resizableWithParent="false">
          <children>
             <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="76.0" prefWidth="296.0">
                <children>
                   <Label prefHeight="57.0" prefWidth="86.0" text="Paskolos suma" wrapText="true" />
-                  <TextField prefHeight="32.0" prefWidth="86.0" />
+                  <TextField id="loanAmountField" fx:id="loanAmountField" prefHeight="32.0" prefWidth="86.0" />
                </children>
                <padding>
                   <Insets left="10.0" right="10.0" />
@@ -35,13 +37,13 @@
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                                  <children>
                                     <Label alignment="CENTER" prefHeight="17.0" prefWidth="95.0" text="Metai" />
-                                    <TextField prefHeight="25.0" prefWidth="73.0" />
+                                    <TextField fx:id="loanTermYearField" prefHeight="25.0" prefWidth="73.0" />
                                  </children>
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                                  <children>
                                     <Label alignment="CENTER" prefHeight="17.0" prefWidth="95.0" text="Mėnesiai" />
-                                    <TextField prefHeight="25.0" prefWidth="70.0" />
+                                    <TextField id="loanTermMonthsField" fx:id="loanTermMonthsField" prefHeight="25.0" prefWidth="70.0" />
                                  </children>
                               </HBox>
                            </children>
@@ -56,16 +58,29 @@
                   <Insets left="10.0" right="10.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="107.0" prefWidth="222.0">
+            <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="67.0" prefWidth="195.0">
                <children>
                   <Label prefHeight="55.0" prefWidth="103.0" text="Metinis procentas" wrapText="true" />
-                  <TextField prefHeight="32.0" prefWidth="70.0" />
+                  <TextField fx:id="loanYearlyRateField" prefHeight="32.0" prefWidth="70.0" />
                </children>
                <padding>
                   <Insets left="10.0" right="10.0" />
                </padding>
             </HBox>
-            <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="Paskaičiuoti" />
+            <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="59.0" prefWidth="195.0">
+               <children>
+                  <ComboBox fx:id="loanScheduleCombo" prefHeight="25.0" prefWidth="154.0" promptText="grąžinimo grafikas" visibleRowCount="2" />
+               </children>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </HBox>
+            <Button fx:id="loanCalculateBtn" mnemonicParsing="false" onAction="#handleCalculateAction" prefHeight="40.0" prefWidth="120.0" text="Paskaičiuoti" />
+            <Text fx:id="errorText" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="155.13671875">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
          </children>
       </VBox>
       <VBox prefHeight="490.0" prefWidth="751.0">
