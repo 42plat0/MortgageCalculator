@@ -86,7 +86,7 @@ public class LandingController {
 		List<Payment> payments = calculator.calculatePayments();
 
 		if (!loanPaymentTable.getItems().isEmpty()) {
-			loanPaymentTable.getItems().removeAll(payments);
+			loanPaymentTable.getItems().clear();
 		}
 		loanPaymentTable.getItems().addAll(payments);
 	}
