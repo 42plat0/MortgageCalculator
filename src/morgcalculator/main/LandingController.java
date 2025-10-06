@@ -16,6 +16,9 @@ import morgcalculator.calculator.AnnuityCalculator;
 import morgcalculator.calculator.LinearCalculator;
 import morgcalculator.calculator.MortgageCalculator;
 import morgcalculator.calculator.Payment;
+import morgcalculator.ui.DeferButton;
+import morgcalculator.ui.ExportButton;
+import morgcalculator.ui.GraphButton;
 
 public class LandingController {
 	@FXML
@@ -34,6 +37,12 @@ public class LandingController {
 	private ComboBox loanScheduleCombo;
 	@FXML
 	private TableView loanPaymentTable;
+	@FXML
+	private ExportButton exportBtn;
+	@FXML
+	private DeferButton deferBtn;
+	@FXML
+	private GraphButton graphBtn;
 
 	public MortgageCalculator calculator;
 
