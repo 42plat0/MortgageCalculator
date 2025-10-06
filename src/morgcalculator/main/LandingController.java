@@ -16,9 +16,6 @@ import morgcalculator.calculator.AnnuityCalculator;
 import morgcalculator.calculator.LinearCalculator;
 import morgcalculator.calculator.MortgageCalculator;
 import morgcalculator.calculator.Payment;
-import morgcalculator.ui.DeferButton;
-import morgcalculator.ui.ExportButton;
-import morgcalculator.ui.GraphButton;
 
 public class LandingController {
 	@FXML
@@ -38,13 +35,14 @@ public class LandingController {
 	@FXML
 	private TableView loanPaymentTable;
 	@FXML
-	private ExportButton exportBtn;
+	private Button exportBtn;
 	@FXML
-	private DeferButton deferBtn;
+	private Button deferBtn;
 	@FXML
-	private GraphButton graphBtn;
+	private Button graphBtn;
 
 	public MortgageCalculator calculator;
+	private List<Payment> payments;
 
 	@FXML
 	private void handleCalculateAction(ActionEvent event) {
@@ -80,6 +78,10 @@ public class LandingController {
 			errorText.setText("");
 		}
 
+		exportBtn.setDisable(false);
+		deferBtn.setDisable(false);
+		graphBtn.setDisable(false);
+
 		MortgageCalculator.Schedule schedule = MortgageCalculator.getSchedule(loanSchedule);
 
 		if (MortgageCalculator.Schedule.ANNUITY == schedule) {
@@ -92,7 +94,7 @@ public class LandingController {
 			throw new NullPointerException("no calculator");
 		}
 
-		List<Payment> payments = calculator.calculatePayments();
+		payments = calculator.calculatePayments();
 
 		if (!loanPaymentTable.getItems().isEmpty()) {
 			loanPaymentTable.getItems().clear();
@@ -132,6 +134,18 @@ public class LandingController {
 
 		loanPaymentTable.getColumns().addAll(idCol, yearCol, monthCol, percentCol, interestCol, periodPaymentCol,
 				totalCol);
+	}
+
+	public void handleExportAction(ActionEvent event) {
+		System.out.println("Export");
+	}
+
+	public void handleGraphAction(ActionEvent event) {
+		System.out.println("Graph");
+	}
+
+	public void handleDeferAction(ActionEvent event) {
+		System.out.println("Defer");
 	}
 
 }

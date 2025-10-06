@@ -42,6 +42,7 @@ public class LinearCalculator extends MortgageCalculator {
 			payments.add(new Payment(month, paymentYear, paymentMonth, getYearlyRate(), interest, loanPayment,
 					totalPayment));
 		}
+		// TODO dynamic last row displaying total sum which changes when payment is paid
 
 		return payments;
 	}
