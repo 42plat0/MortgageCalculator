@@ -25,7 +25,7 @@ public class AnnuityCalculator extends MortgageCalculator {
 		int currentMonth = cal.get(Calendar.MONTH);
 
 		int paymentYear = currentYear;
-		int paymentMonth = currentMonth;
+		int paymentMonth = currentMonth + 1;
 
 		float balance = getLoanAmount();
 		float constantPaymentEachMonth = (float) getPeriodPayment();

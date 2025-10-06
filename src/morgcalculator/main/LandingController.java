@@ -71,7 +71,12 @@ public class LandingController {
 			if (loanYearlyRate == null) {
 				loanYearlyRateField.setText("");
 			}
-			return;
+			loanAmount = 10000f;
+			loanYearlyRate = 5f;
+			loanTermYear = 1;
+			loanTermMonths = 0;
+
+//			return;
 		}
 
 		if (!errorText.getText().isEmpty()) {
@@ -96,10 +101,18 @@ public class LandingController {
 
 		payments = calculator.calculatePayments();
 
+		Payment lastRowInfo = new Payment(0f);
+		for (Payment payment : payments) {
+			payment.setParentContainer(loanPaymentTable);
+			lastRowInfo.setTotalPayment(lastRowInfo.getTotalPayment() + payment.getTotalPayment());
+
+		}
+
 		if (!loanPaymentTable.getItems().isEmpty()) {
 			loanPaymentTable.getItems().clear();
 		}
 		loanPaymentTable.getItems().addAll(payments);
+		loanPaymentTable.getItems().add(lastRowInfo);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -129,11 +142,14 @@ public class LandingController {
 		TableColumn periodPaymentCol = new TableColumn("Įmoka");
 		periodPaymentCol.setCellValueFactory(new PropertyValueFactory<>("periodPayment"));
 
-		TableColumn totalCol = new TableColumn("Viso");
+		TableColumn totalCol = new TableColumn("Viso mokėti");
 		totalCol.setCellValueFactory(new PropertyValueFactory<>("totalPayment"));
 
+		TableColumn payCol = new TableColumn("");
+		payCol.setCellValueFactory(new PropertyValueFactory<>("payBtn"));
+
 		loanPaymentTable.getColumns().addAll(idCol, yearCol, monthCol, percentCol, interestCol, periodPaymentCol,
-				totalCol);
+				totalCol, payCol);
 	}
 
 	public void handleExportAction(ActionEvent event) {

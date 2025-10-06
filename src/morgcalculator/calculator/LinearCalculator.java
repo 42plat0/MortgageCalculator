@@ -26,7 +26,7 @@ public class LinearCalculator extends MortgageCalculator {
 		int currentMonth = cal.get(Calendar.MONTH);
 
 		int paymentYear = currentYear;
-		int paymentMonth = currentMonth;
+		int paymentMonth = currentMonth + 1;
 
 		float balance = getLoanAmount();
 		for (int month = 1; month < periodCount + 1; month++) {

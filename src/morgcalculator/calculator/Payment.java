@@ -1,16 +1,26 @@
 package morgcalculator.calculator;
 
-public class Payment {
-	private int id;
-	private int year;
-	private int month;
-	private float percent;
-	private float interest;
-	private float periodPayment;
-	private float totalPayment;
+import java.util.ArrayList;
+import java.util.List;
 
-	public Payment(int id, int year, int month, float percent, float interest, float periodPayment,
-			float totalPayment) {
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableView;
+
+public class Payment {
+	private Integer id;
+	private Integer year;
+	private Integer month;
+	private Float percent;
+	private Float interest;
+	private Float periodPayment;
+	private Float totalPayment;
+	public Button payBtn;
+	public TableView parentContainer;
+
+	public Payment(Integer id, Integer year, Integer month, Float percent, Float interest, Float periodPayment,
+			Float totalPayment) {
 		this.id = id;
 		this.year = year;
 		this.month = month;
@@ -18,34 +28,80 @@ public class Payment {
 		this.interest = interest;
 		this.periodPayment = periodPayment;
 		this.totalPayment = totalPayment;
+
+		this.payBtn = new Button("payBtn");
+		this.payBtn.setOnAction(getOnAction());
+		this.payBtn.setText("Mokėti");
 	}
 
-	public int getId() {
+	// Last row in table
+	public Payment(Float totalPayment) {
+		this.totalPayment = totalPayment;
+	}
+
+	public Integer getId() {
 		return id;
 	}
 
-	public int getYear() {
+	public Integer getYear() {
 		return year;
 	}
 
-	public int getMonth() {
+	public Integer getMonth() {
 		return month;
 	}
 
-	public float getPercent() {
+	public Float getPercent() {
 		return percent;
 	}
 
-	public float getInterest() {
+	public Float getInterest() {
 		return interest;
 	}
 
-	public float getPeriodPayment() {
+	public Float getPeriodPayment() {
 		return periodPayment;
 	}
 
-	public float getTotalPayment() {
+	public Float getTotalPayment() {
 		return totalPayment;
 	}
 
+	public void setTotalPayment(Float totalPayment) {
+		this.totalPayment = totalPayment;
+	}
+
+	public Button getPayBtn() {
+		return payBtn;
+	}
+
+	public void setParentContainer(TableView parentContainer) {
+		this.parentContainer = parentContainer;
+	}
+
+	public EventHandler<ActionEvent> getOnAction() {
+		return new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				payBtn.setDisable(true);
+				payBtn.setText("Apmokėta");
+				if (parentContainer != null) {
+					// Handle payments
+					List<Payment> payments = parentContainer.getItems();
+					Payment last = payments.getLast();
+
+					List<Payment> newPayments = new ArrayList<>();
+					last.setTotalPayment(last.getTotalPayment() - totalPayment);
+					for (int i = 0; i < payments.size() - 1; i++) {
+						newPayments.add(payments.get(i));
+					}
+					newPayments.add(last);
+					parentContainer.getItems().clear();
+					parentContainer.getItems().addAll(newPayments);
+					parentContainer.refresh();
+
+				}
+			}
+		};
+	}
 }
