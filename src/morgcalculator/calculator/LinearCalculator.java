@@ -19,15 +19,16 @@ public class LinearCalculator extends MortgageCalculator {
 		float periodRate = getRateForPeriod();
 		int periodCount = getNumberOfPeriods();
 		float loanPayment = getLoanAmount() / periodCount;
-		float balance = getLoanAmount();
 
 		int currentYear = Year.now().getValue();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		int currentMonth = cal.get(Calendar.MONTH);
 
-		int paymentYear = currentYear - 1;
+		int paymentYear = currentYear;
 		int paymentMonth = currentMonth;
+
+		float balance = getLoanAmount();
 		for (int month = 1; month < periodCount + 1; month++) {
 			float interest = balance * periodRate;
 			float totalPayment = loanPayment + interest;

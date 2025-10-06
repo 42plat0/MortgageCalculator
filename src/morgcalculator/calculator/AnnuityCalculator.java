@@ -18,44 +18,42 @@ public class AnnuityCalculator extends MortgageCalculator {
 		List<Payment> payments = new ArrayList<Payment>();
 		float periodRate = getRateForPeriod();
 		int periodCount = getNumberOfPeriods();
-		float loanPayment = getPeriodPayment();
-		float balance = getLoanAmount();
 
 		int currentYear = Year.now().getValue();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		int currentMonth = cal.get(Calendar.MONTH);
 
-		int paymentYear = currentYear - 1;
+		int paymentYear = currentYear;
 		int paymentMonth = currentMonth;
-		// DOznt work right.... hmmmm
+
+		float balance = getLoanAmount();
+		float constantPaymentEachMonth = (float) getPeriodPayment();
 		for (int month = 1; month < periodCount + 1; month++) {
 			float interest = balance * periodRate;
-			float principal = loanPayment - interest;
-			float totalPayment = loanPayment + interest;
-			balance -= principal;
+			float principal = constantPaymentEachMonth - interest;
+
+			payments.add(new Payment(month, paymentYear, paymentMonth, getYearlyRate(), interest, principal,
+					constantPaymentEachMonth));
 
 			paymentMonth += 1;
 			if (paymentMonth > 12) {
 				paymentYear += 1;
 				paymentMonth = 1;
 			}
-
-			payments.add(
-					new Payment(month, paymentYear, paymentMonth, getYearlyRate(), interest, principal, totalPayment));
+			balance -= principal;
 		}
 
 		// TODO dynamic last row displaying total sum which changes when payment is paid
 		return payments;
 	}
 
-	private float getPeriodPayment() {
+	private double getPeriodPayment() {
 		float totalAmount = getLoanAmount();
 		float periodRate = getRateForPeriod();
 		float periodCount = getNumberOfPeriods();
 
-		float powered = (float) Math.pow(1 + periodRate, periodCount);
-
-		return totalAmount * powered / powered - 1;
+		return totalAmount * (periodRate * Math.pow(1 + periodRate, periodCount))
+				/ (Math.pow(1 + periodRate, periodCount) - 1);
 	}
 }
