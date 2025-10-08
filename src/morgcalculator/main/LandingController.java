@@ -201,6 +201,7 @@ public class LandingController {
 		Group root = new Group(lc);
 		Scene scene = new Scene(root, 900, 500);
 		stage.setScene(scene);
+		stage.setTitle("Graph of schedules");
 		stage.show();
 
 		System.out.println(calculator.getClass());

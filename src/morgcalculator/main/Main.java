@@ -18,6 +18,7 @@ public class Main extends Application {
 
 			primaryStage.setResizable(false);
 			primaryStage.setScene(scene);
+			primaryStage.setTitle("Mortgage calculator");
 			primaryStage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
