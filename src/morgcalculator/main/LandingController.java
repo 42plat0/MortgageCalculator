@@ -55,13 +55,15 @@ public class LandingController {
 	@FXML
 	private Button filterBtn;
 	@FXML
+	private Button rmFilterBtn;
+	@FXML
 	private Button exportBtn;
 	@FXML
 	private Button deferBtn;
 	@FXML
 	private Button graphBtn;
 	@FXML
-	private Button rmFilterBtn;
+	private Button rmDeferBtn;
 
 	public MortgageCalculator calculator;
 	private List<Payment> payments;

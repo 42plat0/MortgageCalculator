@@ -93,9 +93,9 @@
                   <Font size="25.0" />
                </font>
             </Label>
-            <ButtonBar prefHeight="40.0" prefWidth="200.0">
+            <ButtonBar buttonMinWidth="30.0">
               <buttons>
-                  <VBox alignment="CENTER" prefHeight="76.0">
+                  <VBox alignment="CENTER" prefHeight="55.0" prefWidth="450.0">
                      <children>
                         <HBox prefHeight="100.0" prefWidth="200.0">
                            <children>
@@ -137,9 +137,46 @@
                         </VBox>
                      </children>
                   </VBox>
-                <Button fx:id="exportBtn" disable="true" mnemonicParsing="false" onAction="#handleExportAction" text="Eksportuoti" />
+                <Button fx:id="exportBtn" disable="true" minWidth="0.0" mnemonicParsing="false" onAction="#handleExportAction" prefHeight="25.0" text="Eksportuoti" />
 				<Button fx:id="graphBtn" disable="true" mnemonicParsing="false" onAction="#handleGraphAction" text="Grafikas" />
-				<Button fx:id="deferBtn" disable="true" mnemonicParsing="false" onAction="#handleDeferAction" text="Atidėti" />
+                  <VBox alignment="CENTER" minWidth="0.0" prefHeight="75.0" prefWidth="100.0">
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <DatePicker prefHeight="25.0" prefWidth="112.0" promptText="Nuo...">
+                                 <HBox.margin>
+                                    <Insets right="10.0" />
+                                 </HBox.margin>
+                              </DatePicker>
+                              <TextField prefHeight="25.0" prefWidth="110.0" promptText="Atidėti mėnesiams">
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+            				<Button fx:id="deferBtn" alignment="CENTER" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#handleDeferAction" text="Atidėti">
+                                 <HBox.margin>
+                                    <Insets right="10.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button fx:id="rmDeferBtn" alignment="CENTER_RIGHT" contentDisplay="RIGHT" disable="true" mnemonicParsing="false" onAction="#handleRmDeferAction" prefHeight="25.0" prefWidth="22.0" text="✖" textFill="RED">
+                                 <font>
+                                    <Font name="Bernard MT Condensed" size="12.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="5.0" right="5.0" />
+                                 </padding>
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
               </buttons>
                <padding>
                   <Insets right="10.0" />
