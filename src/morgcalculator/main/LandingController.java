@@ -7,8 +7,11 @@ import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
@@ -17,6 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import morgcalculator.calculator.AnnuityCalculator;
 import morgcalculator.calculator.LinearCalculator;
 import morgcalculator.calculator.MortgageCalculator;
@@ -171,27 +175,12 @@ public class LandingController {
 				System.out.println("Exists");
 			}
 			FileWriter myWriter = new FileWriter("src/resources/output.csv");
-			myWriter.write(convertToCSV(payments));
+			myWriter.write(MyUtils.convertToCSV(payments));
 			myWriter.close(); // must close manually
 
 		} catch (IOException e) {
 			System.out.println("Error occured: " + e.getMessage());
 		}
-	}
-
-	private String convertToCSV(List<Payment> dataList) {
-		if (dataList.isEmpty()) {
-			return "";
-		}
-
-		StringBuilder sb = new StringBuilder();
-		// Headers
-		sb.append("id,").append("year,").append("month,").append("percent,").append("interest,")
-				.append("periodPayment,").append("totalPayment").append("\n");
-		// Data
-		dataList.forEach(payment -> sb.append(payment + "\n"));
-
-		return sb.toString();
 	}
 
 	public void handleGraphAction(ActionEvent event) {
@@ -206,41 +195,71 @@ public class LandingController {
 		}
 
 		List<Payment> otherPayments = calculator.calculatePayments();
-		LineChart lc = getGraphLineChart(List.of(payments, otherPayments));
+		LineChart lc = getGraphLineChart(payments, otherPayments, calculator.getClass());
+
+		Stage stage = new Stage();
+		Group root = new Group(lc);
+		Scene scene = new Scene(root, 900, 500);
+		stage.setScene(scene);
+		stage.show();
 
 		System.out.println(calculator.getClass());
 	}
 
-	private LineChart getGraphLineChart(List<List<Payment>> dataList) {
+	private LineChart getGraphLineChart(List<Payment> dataList, List<Payment> dataList1, Class dataList1Class) {
 		// https://www.tutorialspoint.com/javafx/line_chart.htm
 		// Defining the y axis
-		NumberAxis xAxis = new NumberAxis(1, loanTermYearInput * 12 + loanTermMonthsInput, 12);
+		NumberAxis xAxis = new NumberAxis(0, loanTermYearInput * 12 + loanTermMonthsInput, 12);
 		xAxis.setLabel("Months");
+		xAxis.setMinorTickVisible(true);
+		xAxis.setMinorTickCount(5);
+		xAxis.setTickLabelsVisible(true);
+
+		int upperBoundForPayments = 0;
+		for (int i = 0; i < dataList.size(); i++) {
+			Payment payment = dataList.get(i);
+			if (MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment()) > upperBoundForPayments) {
+				upperBoundForPayments = MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment());
+			}
+			payment.setPlaceInMonth(i);
+		}
+
+		for (int i = 0; i < dataList1.size(); i++) {
+			Payment payment = dataList1.get(i);
+			if (MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment()) > upperBoundForPayments) {
+				upperBoundForPayments = MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment());
+			}
+			payment.setPlaceInMonth(i);
+		}
 
 		// Defining the y axis
-		int upperBoundForPayments = 0;
-
-		for (int i = 0; i < dataList.getFirst().size(); i++) {
-			Payment payment = dataList.getFirst().get(i);
-			if (MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment()) > upperBoundForPayments) {
-				upperBoundForPayments = MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment());
-				System.out.println();
-			}
-		}
-
-		for (int i = 0; i < dataList.get(1).size(); i++) {
-			Payment payment = dataList.get(1).get(i);
-			if (MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment()) > upperBoundForPayments) {
-				upperBoundForPayments = MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment());
-			}
-		}
-
 		int step = MyUtils.getBase(upperBoundForPayments);
 		NumberAxis yAxis = new NumberAxis(0, upperBoundForPayments, step);
 		yAxis.setLabel("Total payment");
+		yAxis.setMinorTickVisible(true);
+		yAxis.setMinorTickCount(5);
+		yAxis.setTickLabelsVisible(true);
 
+		xAxis.setAutoRanging(true);
+		yAxis.setAutoRanging(true);
 		LineChart lc = new LineChart(xAxis, yAxis);
 
+		XYChart.Series annuitySeries = new XYChart.Series();
+		annuitySeries.setName("Annuity schedule");
+		XYChart.Series linearSeries = new XYChart.Series();
+		linearSeries.setName("Linear schedule");
+
+		if (dataList1Class == AnnuityCalculator.class) {
+			dataList1.forEach(p -> annuitySeries.getData().add(p.getChartData()));
+			dataList.forEach(p -> linearSeries.getData().add(p.getChartData()));
+		} else {
+			dataList.forEach(p -> annuitySeries.getData().add(p.getChartData()));
+			dataList1.forEach(p -> linearSeries.getData().add(p.getChartData()));
+		}
+
+		lc.getData().addAll(annuitySeries, linearSeries);
+		lc.setCreateSymbols(true); // Enable data point symbols
+		lc.setPrefSize(800, 400);
 		return lc;
 	}
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 
@@ -16,8 +17,10 @@ public class Payment {
 	private Float interest;
 	private Float periodPayment;
 	private Float totalPayment;
+
 	public Button payBtn;
 	public TableView parentContainer;
+	private Integer placeInMonth; // used for graph
 
 	public Payment(Integer id, Integer year, Integer month, Float percent, Float interest, Float periodPayment,
 			Float totalPayment) {
@@ -28,7 +31,6 @@ public class Payment {
 		this.interest = interest;
 		this.periodPayment = periodPayment;
 		this.totalPayment = totalPayment;
-
 		this.payBtn = new Button("payBtn");
 		this.payBtn.setOnAction(getOnAction());
 		this.payBtn.setText("Mokėti");
@@ -79,6 +81,14 @@ public class Payment {
 		this.parentContainer = parentContainer;
 	}
 
+	public Integer getPlaceInMonth() {
+		return placeInMonth;
+	}
+
+	public void setPlaceInMonth(int placeInMonth) {
+		this.placeInMonth = placeInMonth;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -90,6 +100,13 @@ public class Payment {
 		sb.append(periodPayment == null ? "" : periodPayment).append(",");
 		sb.append(totalPayment == null ? "" : totalPayment);
 		return sb.toString();
+	}
+
+	public XYChart.Data getChartData() {
+		if (placeInMonth != null) {
+			return new XYChart.Data(placeInMonth, totalPayment);
+		}
+		return null;
 	}
 
 	public EventHandler<ActionEvent> getOnAction() {
