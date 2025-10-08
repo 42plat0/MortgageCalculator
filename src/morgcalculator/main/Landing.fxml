@@ -99,9 +99,9 @@
                         <Label contentDisplay="CENTER" prefHeight="17.0" prefWidth="125.0" text="Filtruoti" />
                      </children>
                   </HBox>
-                <Button fx:id="deferBtn" disable="true" mnemonicParsing="false" onAction="#handleExportAction" text="Atidėti" />
+                <Button fx:id="exportBtn" disable="true" mnemonicParsing="false" onAction="#handleExportAction" text="Eksportuoti" />
 				<Button fx:id="graphBtn" disable="true" mnemonicParsing="false" onAction="#handleGraphAction" text="Grafikas" />
-				<Button fx:id="exportBtn" disable="true" mnemonicParsing="false" onAction="#handleDeferAction" text="Eksportuoti" />
+				<Button fx:id="deferBtn" disable="true" mnemonicParsing="false" onAction="#handleDeferAction" text="Atidėti" />
               </buttons>
                <padding>
                   <Insets right="10.0" />

@@ -79,6 +79,19 @@ public class Payment {
 		this.parentContainer = parentContainer;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(id == null ? "" : id).append(",");
+		sb.append(year == null ? "" : year).append(",");
+		sb.append(month == null ? "" : month).append(",");
+		sb.append(percent == null ? "" : percent).append(",");
+		sb.append(interest == null ? "" : interest).append(",");
+		sb.append(periodPayment == null ? "" : periodPayment).append(",");
+		sb.append(totalPayment == null ? "" : totalPayment);
+		return sb.toString();
+	}
+
 	public EventHandler<ActionEvent> getOnAction() {
 		return new EventHandler<ActionEvent>() {
 			@Override

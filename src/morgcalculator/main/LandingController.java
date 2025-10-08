@@ -1,5 +1,8 @@
 package morgcalculator.main;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import javafx.event.ActionEvent;
@@ -153,7 +156,35 @@ public class LandingController {
 	}
 
 	public void handleExportAction(ActionEvent event) {
-		System.out.println("Export");
+		try {
+			File file = new File("src/resources/output.csv");
+			if (file.createNewFile()) {
+				System.out.println("Created file");
+			} else {
+				System.out.println("Exists");
+			}
+			FileWriter myWriter = new FileWriter("src/resources/output.csv");
+			myWriter.write(convertToCSV(payments));
+			myWriter.close(); // must close manually
+
+		} catch (IOException e) {
+			System.out.println("Error occured: " + e.getMessage());
+		}
+	}
+
+	private String convertToCSV(List<Payment> dataList) {
+		if (dataList.isEmpty()) {
+			return "";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		// Headers
+		sb.append("id,").append("year,").append("month,").append("percent,").append("interest,")
+				.append("periodPayment,").append("totalPayment").append("\n");
+		// Data
+		dataList.forEach(payment -> sb.append(payment + "\n"));
+
+		return sb.toString();
 	}
 
 	public void handleGraphAction(ActionEvent event) {
