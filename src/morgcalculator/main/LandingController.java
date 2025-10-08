@@ -7,6 +7,8 @@ import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
@@ -18,6 +20,7 @@ import javafx.scene.text.Text;
 import morgcalculator.calculator.AnnuityCalculator;
 import morgcalculator.calculator.LinearCalculator;
 import morgcalculator.calculator.MortgageCalculator;
+import morgcalculator.calculator.MyUtils;
 import morgcalculator.calculator.Payment;
 
 public class LandingController {
@@ -47,37 +50,39 @@ public class LandingController {
 	public MortgageCalculator calculator;
 	private List<Payment> payments;
 
+	Float loanAmountInput;
+	Integer loanTermYearInput;
+	Integer loanTermMonthsInput;
+	Float loanYearlyRateInput;
+	int loanScheduleInput;
+
 	@FXML
 	private void handleCalculateAction(ActionEvent event) {
-		Float loanAmount = null;
-		Integer loanTermYear = null;
-		Integer loanTermMonths = null;
-		Float loanYearlyRate = null;
-		int loanSchedule = loanScheduleCombo.getSelectionModel().getSelectedIndex();
+		loanScheduleInput = loanScheduleCombo.getSelectionModel().getSelectedIndex();
 		try {
-			loanAmount = Float.valueOf(loanAmountField.getText());
-			loanYearlyRate = Float.valueOf(loanYearlyRateField.getText());
-			loanTermYear = Integer.valueOf(loanTermYearField.getText());
-			loanTermMonths = Integer.valueOf(loanTermMonthsField.getText());
+			loanAmountInput = Float.valueOf(loanAmountField.getText());
+			loanYearlyRateInput = Float.valueOf(loanYearlyRateField.getText());
+			loanTermYearInput = Integer.valueOf(loanTermYearField.getText());
+			loanTermMonthsInput = Integer.valueOf(loanTermMonthsField.getText());
 		} catch (NumberFormatException e) {
 			errorText.setFill(Color.FIREBRICK);
 			errorText.setText("Įvestis gali būti tik skaičiai!");
-			if (loanAmount == null) {
+			if (loanAmountInput == null) {
 				loanAmountField.setText("");
 			}
-			if (loanTermYear == null) {
+			if (loanTermYearInput == null) {
 				loanTermYearField.setText("");
 			}
-			if (loanTermMonths == null) {
+			if (loanTermMonthsInput == null) {
 				loanTermMonthsField.setText("");
 			}
-			if (loanYearlyRate == null) {
+			if (loanYearlyRateInput == null) {
 				loanYearlyRateField.setText("");
 			}
-			loanAmount = 10000f;
-			loanYearlyRate = 5f;
-			loanTermYear = 1;
-			loanTermMonths = 0;
+			loanAmountInput = 10000f;
+			loanYearlyRateInput = 5f;
+			loanTermYearInput = 1;
+			loanTermMonthsInput = 0;
 
 //			return;
 		}
@@ -87,15 +92,17 @@ public class LandingController {
 		}
 
 		exportBtn.setDisable(false);
-		deferBtn.setDisable(false);
+//		deferBtn.setDisable(false);
 		graphBtn.setDisable(false);
 
-		MortgageCalculator.Schedule schedule = MortgageCalculator.getSchedule(loanSchedule);
+		MortgageCalculator.Schedule schedule = MortgageCalculator.getSchedule(loanScheduleInput);
 
 		if (MortgageCalculator.Schedule.ANNUITY == schedule) {
-			calculator = new AnnuityCalculator(loanAmount, loanYearlyRate, loanTermYear, loanTermMonths);
+			calculator = new AnnuityCalculator(loanAmountInput, loanYearlyRateInput, loanTermYearInput,
+					loanTermMonthsInput);
 		} else if (MortgageCalculator.Schedule.LINEAR == schedule) {
-			calculator = new LinearCalculator(loanAmount, loanYearlyRate, loanTermYear, loanTermMonths);
+			calculator = new LinearCalculator(loanAmountInput, loanYearlyRateInput, loanTermYearInput,
+					loanTermMonthsInput);
 		}
 
 		if (calculator == null) {
@@ -188,7 +195,53 @@ public class LandingController {
 	}
 
 	public void handleGraphAction(ActionEvent event) {
-		System.out.println("Graph");
+		// Just show both calculations for payments in same graph
+		MortgageCalculator otherCalculator;
+		if (calculator.getClass() == AnnuityCalculator.class) {
+			calculator = new LinearCalculator(loanAmountInput, loanYearlyRateInput, loanTermYearInput,
+					loanTermMonthsInput);
+		} else if (calculator.getClass() == LinearCalculator.class) {
+			calculator = new AnnuityCalculator(loanAmountInput, loanYearlyRateInput, loanTermYearInput,
+					loanTermMonthsInput);
+		}
+
+		List<Payment> otherPayments = calculator.calculatePayments();
+		LineChart lc = getGraphLineChart(List.of(payments, otherPayments));
+
+		System.out.println(calculator.getClass());
+	}
+
+	private LineChart getGraphLineChart(List<List<Payment>> dataList) {
+		// https://www.tutorialspoint.com/javafx/line_chart.htm
+		// Defining the y axis
+		NumberAxis xAxis = new NumberAxis(1, loanTermYearInput * 12 + loanTermMonthsInput, 12);
+		xAxis.setLabel("Months");
+
+		// Defining the y axis
+		int upperBoundForPayments = 0;
+
+		for (int i = 0; i < dataList.getFirst().size(); i++) {
+			Payment payment = dataList.getFirst().get(i);
+			if (MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment()) > upperBoundForPayments) {
+				upperBoundForPayments = MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment());
+				System.out.println();
+			}
+		}
+
+		for (int i = 0; i < dataList.get(1).size(); i++) {
+			Payment payment = dataList.get(1).get(i);
+			if (MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment()) > upperBoundForPayments) {
+				upperBoundForPayments = MyUtils.roundUpToNextNiceNumber(payment.getTotalPayment());
+			}
+		}
+
+		int step = MyUtils.getBase(upperBoundForPayments);
+		NumberAxis yAxis = new NumberAxis(0, upperBoundForPayments, step);
+		yAxis.setLabel("Total payment");
+
+		LineChart lc = new LineChart(xAxis, yAxis);
+
+		return lc;
 	}
 
 	public void handleDeferAction(ActionEvent event) {
