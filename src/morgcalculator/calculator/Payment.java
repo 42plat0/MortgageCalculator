@@ -1,5 +1,6 @@
 package morgcalculator.calculator;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,6 +110,14 @@ public class Payment {
 		return null;
 	}
 
+	public boolean isInDateRange(LocalDate from, LocalDate to) {
+		LocalDate paymentDate = LocalDate.of(this.year, this.month, 15);
+		System.out.println("FROM " + paymentDate.isAfter(from));
+		System.out.println("TO " + paymentDate.isBefore(to));
+		System.out.println(paymentDate.isAfter(from) && paymentDate.isBefore(to));
+		return paymentDate.isAfter(from) && paymentDate.isBefore(to);
+	}
+
 	public EventHandler<ActionEvent> getOnAction() {
 		return new EventHandler<ActionEvent>() {
 			@Override
@@ -116,7 +125,7 @@ public class Payment {
 				payBtn.setDisable(true);
 				payBtn.setText("Apmokėta");
 				if (parentContainer != null) {
-					// Handle payments
+					// Handle payment of payment - button on the same row
 					List<Payment> payments = parentContainer.getItems();
 					Payment last = payments.getLast();
 

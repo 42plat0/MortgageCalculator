@@ -3,7 +3,10 @@ package morgcalculator.main;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,6 +17,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -45,14 +49,23 @@ public class LandingController {
 	@FXML
 	private TableView loanPaymentTable;
 	@FXML
+	private DatePicker dateFrom;
+	@FXML
+	private DatePicker dateTo;
+	@FXML
+	private Button filterBtn;
+	@FXML
 	private Button exportBtn;
 	@FXML
 	private Button deferBtn;
 	@FXML
 	private Button graphBtn;
+	@FXML
+	private Button rmFilterBtn;
 
 	public MortgageCalculator calculator;
 	private List<Payment> payments;
+	private List<Payment> filteredPayments;
 
 	Float loanAmountInput;
 	Integer loanTermYearInput;
@@ -98,6 +111,7 @@ public class LandingController {
 		exportBtn.setDisable(false);
 //		deferBtn.setDisable(false);
 		graphBtn.setDisable(false);
+		filterBtn.setDisable(false);
 
 		MortgageCalculator.Schedule schedule = MortgageCalculator.getSchedule(loanScheduleInput);
 
@@ -164,6 +178,7 @@ public class LandingController {
 
 		loanPaymentTable.getColumns().addAll(idCol, yearCol, monthCol, percentCol, interestCol, periodPaymentCol,
 				totalCol, payCol);
+
 	}
 
 	public void handleExportAction(ActionEvent event) {
@@ -203,8 +218,6 @@ public class LandingController {
 		stage.setScene(scene);
 		stage.setTitle("Graph of schedules");
 		stage.show();
-
-		System.out.println(calculator.getClass());
 	}
 
 	private LineChart getGraphLineChart(List<Payment> dataList, List<Payment> dataList1, Class dataList1Class) {
@@ -243,7 +256,7 @@ public class LandingController {
 
 		xAxis.setAutoRanging(true);
 		yAxis.setAutoRanging(true);
-		LineChart lc = new LineChart(xAxis, yAxis);
+		LineChart<?, ?> lc = new LineChart(xAxis, yAxis);
 
 		XYChart.Series annuitySeries = new XYChart.Series();
 		annuitySeries.setName("Annuity schedule");
@@ -268,4 +281,51 @@ public class LandingController {
 		System.out.println("Defer");
 	}
 
+	public void handleFilterAction(ActionEvent event) {
+		rmFilterBtn.setDisable(false);
+		if (filteredPayments == null) {
+			filteredPayments = new ArrayList<Payment>();
+		} else if (!filteredPayments.isEmpty()) {
+			filteredPayments.clear();
+		}
+
+		if (!loanPaymentTable.getItems().isEmpty()) {
+			loanPaymentTable.getItems().clear();
+		}
+
+		LocalDate from = dateFrom.getValue();
+		LocalDate to = dateTo.getValue();
+
+		filteredPayments = payments.stream().filter(p -> p.isInDateRange(from, to)).collect(Collectors.toList());
+
+		Payment lastRowInfo = new Payment(0f);
+		for (Payment payment : filteredPayments) {
+			payment.setParentContainer(loanPaymentTable);
+			lastRowInfo.setTotalPayment(lastRowInfo.getTotalPayment() + payment.getTotalPayment());
+		}
+		loanPaymentTable.getItems().addAll(filteredPayments);
+		loanPaymentTable.getItems().add(lastRowInfo);
+
+	}
+
+	public void handleRmFilterAction(ActionEvent event) {
+		if (!loanPaymentTable.getItems().isEmpty()) {
+			loanPaymentTable.getItems().clear();
+		}
+
+		Payment lastRowInfo = new Payment(0f);
+		for (Payment payment : payments) {
+			payment.setParentContainer(loanPaymentTable);
+			lastRowInfo.setTotalPayment(lastRowInfo.getTotalPayment() + payment.getTotalPayment());
+
+		}
+
+		if (!loanPaymentTable.getItems().isEmpty()) {
+			loanPaymentTable.getItems().clear();
+		}
+		loanPaymentTable.getItems().addAll(payments);
+		loanPaymentTable.getItems().add(lastRowInfo);
+		rmFilterBtn.setDisable(true);
+
+	}
 }
