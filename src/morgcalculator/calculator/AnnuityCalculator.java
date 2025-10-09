@@ -1,5 +1,6 @@
 package morgcalculator.calculator;
 
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,8 +45,25 @@ public class AnnuityCalculator extends MortgageCalculator {
 			balance -= principal;
 		}
 
-		// TODO dynamic last row displaying total sum which changes when payment is paid
 		return payments;
+	}
+
+	@Override
+	public List<Payment> calculateDeferredPayments(List<Payment> payments, LocalDate deferStart, int deferMonthsCount) {
+		if (payments == null || payments.isEmpty()) {
+			return null;
+		}
+		// Atidejimas turi priimti procenta, t.y. nauja metini procenta, kuri mokes tuos
+		// menesius.
+
+		List<Payment> deferredPayments = new ArrayList<Payment>(payments.size() + deferMonthsCount);
+
+		for (Payment payment : payments) {
+			deferredPayments.add(payment);
+
+		}
+
+		return deferredPayments;
 	}
 
 	private double getPeriodPayment() {

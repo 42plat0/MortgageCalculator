@@ -110,12 +110,22 @@ public class Payment {
 		return null;
 	}
 
+	private LocalDate getDate() {
+		return LocalDate.of(this.year, this.month, 28);
+	}
+
 	public boolean isInDateRange(LocalDate from, LocalDate to) {
-		LocalDate paymentDate = LocalDate.of(this.year, this.month, 15);
-		System.out.println("FROM " + paymentDate.isAfter(from));
-		System.out.println("TO " + paymentDate.isBefore(to));
-		System.out.println(paymentDate.isAfter(from) && paymentDate.isBefore(to));
+		LocalDate paymentDate = getDate();
 		return paymentDate.isAfter(from) && paymentDate.isBefore(to);
+	}
+
+	public boolean isOnDate(LocalDate date) {
+		LocalDate paymentDate = getDate();
+		return paymentDate.getYear() - date.getYear() == 0 && paymentDate.getMonthValue() - date.getMonthValue() == 0;
+	}
+
+	public boolean isAfterDate(LocalDate date) {
+		return getDate().isAfter(date);
 	}
 
 	public EventHandler<ActionEvent> getOnAction() {

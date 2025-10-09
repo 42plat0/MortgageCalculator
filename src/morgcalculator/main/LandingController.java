@@ -61,6 +61,10 @@ public class LandingController {
 	@FXML
 	private Button deferBtn;
 	@FXML
+	private DatePicker deferDateFrom;
+	@FXML
+	private TextField deferMonthCount;
+	@FXML
 	private Button graphBtn;
 	@FXML
 	private Button rmDeferBtn;
@@ -68,6 +72,7 @@ public class LandingController {
 	public MortgageCalculator calculator;
 	private List<Payment> payments;
 	private List<Payment> filteredPayments;
+	private List<Payment> deferredPayments;
 
 	Float loanAmountInput;
 	Integer loanTermYearInput;
@@ -111,7 +116,7 @@ public class LandingController {
 		}
 
 		exportBtn.setDisable(false);
-//		deferBtn.setDisable(false);
+		deferBtn.setDisable(false);
 		graphBtn.setDisable(false);
 		filterBtn.setDisable(false);
 
@@ -202,7 +207,7 @@ public class LandingController {
 
 	public void handleGraphAction(ActionEvent event) {
 		// Just show both calculations for payments in same graph
-		MortgageCalculator otherCalculator;
+		MortgageCalculator otherCalculator = null;
 		if (calculator.getClass() == AnnuityCalculator.class) {
 			calculator = new LinearCalculator(loanAmountInput, loanYearlyRateInput, loanTermYearInput,
 					loanTermMonthsInput);
@@ -281,6 +286,48 @@ public class LandingController {
 
 	public void handleDeferAction(ActionEvent event) {
 		System.out.println("Defer");
+		if (deferredPayments == null) {
+			deferredPayments = new ArrayList<Payment>();
+		} else if (!deferredPayments.isEmpty()) {
+			deferredPayments.clear();
+		}
+
+		LocalDate from = deferDateFrom.getValue();
+		Integer monthCount = Integer.valueOf(deferMonthCount.getText());
+
+		if (!loanPaymentTable.getItems().isEmpty()) {
+			loanPaymentTable.getItems().clear();
+		}
+
+		deferredPayments = calculator.calculateDeferredPayments(payments, from, loanScheduleInput);
+
+		Payment lastRowInfo = new Payment(0f);
+		for (Payment payment : deferredPayments) {
+			payment.setParentContainer(loanPaymentTable);
+			lastRowInfo.setTotalPayment(lastRowInfo.getTotalPayment() + payment.getTotalPayment());
+		}
+
+		loanPaymentTable.getItems().addAll(deferredPayments);
+		loanPaymentTable.getItems().add(lastRowInfo);
+
+		System.out.println(
+				"New balance: " + Math.pow(lastRowInfo.getTotalPayment() * (1 * loanYearlyRateInput), monthCount));
+	}
+
+	public void handleRmDeferAction(ActionEvent event) {
+		rmDeferBtn.setDisable(false);
+		if (!loanPaymentTable.getItems().isEmpty()) {
+			loanPaymentTable.getItems().clear();
+		}
+
+		Payment lastRowInfo = new Payment(0f);
+		for (Payment payment : payments) {
+			payment.setParentContainer(loanPaymentTable);
+			lastRowInfo.setTotalPayment(lastRowInfo.getTotalPayment() + payment.getTotalPayment());
+		}
+
+		loanPaymentTable.getItems().addAll(payments);
+		loanPaymentTable.getItems().add(lastRowInfo);
 	}
 
 	public void handleFilterAction(ActionEvent event) {
@@ -311,6 +358,7 @@ public class LandingController {
 	}
 
 	public void handleRmFilterAction(ActionEvent event) {
+		rmFilterBtn.setDisable(true);
 		if (!loanPaymentTable.getItems().isEmpty()) {
 			loanPaymentTable.getItems().clear();
 		}
@@ -322,12 +370,7 @@ public class LandingController {
 
 		}
 
-		if (!loanPaymentTable.getItems().isEmpty()) {
-			loanPaymentTable.getItems().clear();
-		}
 		loanPaymentTable.getItems().addAll(payments);
 		loanPaymentTable.getItems().add(lastRowInfo);
-		rmFilterBtn.setDisable(true);
-
 	}
 }

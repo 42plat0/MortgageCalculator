@@ -1,5 +1,6 @@
 package morgcalculator.calculator;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class MortgageCalculator {
@@ -73,9 +74,11 @@ public class MortgageCalculator {
 	}
 
 	public List<Payment> calculatePayments() {
-
-		System.out.println("In mortgage");
+		// Meant to be overriden
 		return null;
-		// Meant to be overrided
+	}
+
+	public List<Payment> calculateDeferredPayments(List<Payment> payments, LocalDate deferStart, int deferMonthsCount) {
+		return null;
 	}
 }

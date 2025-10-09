@@ -1,5 +1,6 @@
 package morgcalculator.calculator;
 
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,8 +44,17 @@ public class LinearCalculator extends MortgageCalculator {
 			payments.add(new Payment(month, paymentYear, paymentMonth, getYearlyRate(), interest, loanPayment,
 					totalPayment));
 		}
-		// TODO dynamic last row displaying total sum which changes when payment is paid
 
 		return payments;
+	}
+
+	@Override
+	public List<Payment> calculateDeferredPayments(List<Payment> payments, LocalDate deferStart, int deferMonthsCount) {
+		if (payments == null || payments.isEmpty()) {
+			return null;
+		}
+		List<Payment> deferredPayments = new ArrayList<Payment>(payments.size() + deferMonthsCount);
+
+		return deferredPayments;
 	}
 }

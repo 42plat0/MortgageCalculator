@@ -143,12 +143,12 @@
                      <children>
                         <HBox prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <DatePicker prefHeight="25.0" prefWidth="112.0" promptText="Nuo...">
+                              <DatePicker fx:id="deferDateFrom" prefHeight="25.0" prefWidth="112.0" promptText="Nuo...">
                                  <HBox.margin>
                                     <Insets right="10.0" />
                                  </HBox.margin>
                               </DatePicker>
-                              <TextField prefHeight="25.0" prefWidth="110.0" promptText="Atidėti mėnesiams">
+                              <TextField fx:id="deferMonthCount" prefHeight="25.0" prefWidth="110.0" promptText="Atidėti mėnesiams">
                                  <HBox.margin>
                                     <Insets left="10.0" />
                                  </HBox.margin>
