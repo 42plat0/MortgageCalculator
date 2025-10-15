@@ -68,6 +68,8 @@ public class LandingController {
 	@FXML
 	private TextField deferMonthCount;
 	@FXML
+	private TextField deferRate;
+	@FXML
 	private Button graphBtn;
 	@FXML
 	private Button rmDeferBtn;
@@ -306,6 +308,7 @@ public class LandingController {
 
 		Integer lengthMonths = Integer.valueOf(deferMonthCount.getText());
 		Float rate = Float.valueOf(deferRate.getText());
+		System.out.println(rate);
 		Defer defer = new Defer(deferDateFrom.getValue(), lengthMonths, rate);
 		calculator.setDefer(defer);
 		deferredPayments = calculator.calculatePayments();
@@ -319,9 +322,9 @@ public class LandingController {
 
 		loanPaymentTable.getItems().addAll(deferredPayments);
 		loanPaymentTable.getItems().add(lastRowInfo);
-
-		System.out.println(
-				"New balance: " + Math.pow(lastRowInfo.getTotalPayment() * (1 * loanYearlyRateInput), monthCount));
+//
+//		System.out.println(
+//				"New balance: " + Math.pow(lastRowInfo.getTotalPayment() * (1 * loanYearlyRateInput), monthCount));
 	}
 
 	public void handleRmDeferAction(ActionEvent event) {

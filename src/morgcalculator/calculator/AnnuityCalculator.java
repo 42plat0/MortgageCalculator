@@ -2,6 +2,7 @@ package morgcalculator.calculator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class AnnuityCalculator extends MortgageCalculator {
@@ -14,77 +15,66 @@ public class AnnuityCalculator extends MortgageCalculator {
 	public List<Payment> calculatePayments() {
 		// Meant to be overrided
 		List<Payment> payments = new ArrayList<Payment>();
-
 		List<Payment> deferredPayments = new ArrayList<Payment>();
+		List<Payment> normalPayments = new ArrayList<Payment>();
+
 		int periodCount = getNumberOfPeriods();
 		float balance = getLoanAmount();
-		float rate = getYearlyRate();
 		LocalDate startDate = LocalDate.now();
-		float periodRate = getRateForPeriod(rate);
+		float periodRate = getRateForPeriod(getYearlyRate());
 
 		Defer defer = getDefer();
-
-		if (defer != null) {
-			LocalDate date = defer.getDate();
-			float constantPaymentEachMonth = (float) getPeriodPayment(balance, getRateForPeriod(defer.getRate()),
-					defer.getLengthMonths());
-
-			for (int i = 0; i < periodCount; i++) {
-
-				float interest = balance * periodRate;
-				float principal = constantPaymentEachMonth - interest;
-
-				if (defer != null && defer.getDate().compareTo(startDate) < 30) {
-					Integer lengthDefer = defer.getLengthMonths();
-					for (int deferI = 0; deferI < lengthDefer; deferI++) {
-						constantPaymentEachMonth = (float) getPeriodPayment(balance, getRateForPeriod(defer.getRate()),
-								lengthDefer);
-						principal = constantPaymentEachMonth - interest;
-						Payment payment = new Payment(deferI + 1, startDate, defer.getRate(), interest, principal,
-								constantPaymentEachMonth);
-						payments.add(payment);
-						startDate = startDate.plusMonths(1);
-						balance -= principal;
-					}
-					continue;
-				}
-
-				Payment payment = new Payment(i + 1, startDate, rate, interest, principal, constantPaymentEachMonth);
-				payments.add(payment);
-
-				startDate = startDate.plusMonths(1);
-				balance -= principal;
-			}
-
-		}
+		LocalDate deferStartDate = null;
+		LocalDate deferEndDate = null;
 
 		float constantPaymentEachMonth = (float) getPeriodPayment(balance, periodRate, periodCount);
+
+		if (defer != null) {
+			deferStartDate = defer.getDate();
+			deferEndDate = deferStartDate.plusMonths(defer.getLengthMonths());
+			LocalDate defEndClone = deferEndDate;
+			periodCount += defer.getLengthMonths();
+			for (int i = 0; i < defer.getLengthMonths(); i++) {
+				float paymentThisMonth = constantPaymentEachMonth * (defer.getRate() / 100f);
+				float interest = balance * periodRate;
+				float principal = paymentThisMonth - interest;
+				Payment payment = new Payment(i + 1, defEndClone, defer.getRate(), interest, principal,
+						paymentThisMonth);
+				deferredPayments.add(payment);
+				defEndClone = defEndClone.plusMonths(1);
+				balance -= principal;
+			}
+		}
+
 		for (int i = 0; i < periodCount; i++) {
-			float constantPaymentEachMonth = (float) getPeriodPayment(balance, periodRate, periodCount);
-
+			boolean isDeferement = defer != null && !startDate.isBefore(deferStartDate)
+					&& !startDate.isAfter(deferEndDate);
+			float rate = getYearlyRate();
 			float interest = balance * periodRate;
-			float principal = constantPaymentEachMonth - interest;
+			float paymentThisMonth = constantPaymentEachMonth;
+			float principal = paymentThisMonth - interest;
 
-			if (defer != null && defer.getDate().compareTo(startDate) < 30) {
-				Integer lengthDefer = defer.getLengthMonths();
-				for (int deferI = 0; deferI < lengthDefer; deferI++) {
-					constantPaymentEachMonth = (float) getPeriodPayment(balance, getRateForPeriod(defer.getRate()),
-							lengthDefer);
-					principal = constantPaymentEachMonth - interest;
-					Payment payment = new Payment(deferI + 1, startDate, defer.getRate(), interest, principal,
-							constantPaymentEachMonth);
-					payments.add(payment);
-					startDate = startDate.plusMonths(1);
-					balance -= principal;
-				}
+			if (isDeferement) {
+				startDate = startDate.plusMonths(1);
 				continue;
 			}
 
-			Payment payment = new Payment(i + 1, startDate, rate, interest, principal, constantPaymentEachMonth);
-			payments.add(payment);
+			Payment payment = new Payment(i + 1, startDate, rate, interest, principal, paymentThisMonth);
+			normalPayments.add(payment);
 
 			startDate = startDate.plusMonths(1);
 			balance -= principal;
+		}
+
+		if (deferredPayments.size() > 0) {
+			payments.addAll(normalPayments);
+			payments.addAll(deferredPayments);
+			payments.sort(Comparator.comparing(Payment::getDate));
+			for (int i = 0; i < payments.size(); i++) {
+				payments.get(i).setId(i + 1);
+			}
+		} else {
+			payments.addAll(normalPayments);
 		}
 
 		return payments;

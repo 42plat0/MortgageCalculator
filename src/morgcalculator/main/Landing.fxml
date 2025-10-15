@@ -157,6 +157,7 @@
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                            <children>
+                              <TextField fx:id="deferRate" prefHeight="25.0" prefWidth="53.0" promptText="Proc." />
             				<Button fx:id="deferBtn" alignment="CENTER" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#handleDeferAction" text="Atidėti">
                                  <HBox.margin>
                                     <Insets right="10.0" />

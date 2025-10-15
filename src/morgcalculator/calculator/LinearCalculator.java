@@ -13,7 +13,9 @@ public class LinearCalculator extends MortgageCalculator {
 	public List<Payment> calculatePayments() {
 		// Meant to be overrided
 		List<Payment> payments = new ArrayList<Payment>();
-		float periodRate = getRateForPeriod();
+
+		float rate = getYearlyRate();
+		float periodRate = getRateForPeriod(rate);
 		int periodCount = getNumberOfPeriods();
 		float loanPayment = getLoanAmount() / periodCount;
 
@@ -21,7 +23,6 @@ public class LinearCalculator extends MortgageCalculator {
 
 		LocalDate startDate = LocalDate.now();
 
-		float rate = getYearlyRate();
 		for (int i = 0; i < periodCount; i++) {
 			float interest = balance * periodRate;
 			float totalPayment = loanPayment + interest;

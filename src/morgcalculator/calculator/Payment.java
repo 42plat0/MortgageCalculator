@@ -44,6 +44,10 @@ public class Payment {
 		return id;
 	}
 
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 	public Float getPercent() {
 		return percent;
 	}
