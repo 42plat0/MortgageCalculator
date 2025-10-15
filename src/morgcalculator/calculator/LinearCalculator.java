@@ -1,10 +1,7 @@
 package morgcalculator.calculator;
 
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class LinearCalculator extends MortgageCalculator {
@@ -16,45 +13,26 @@ public class LinearCalculator extends MortgageCalculator {
 	public List<Payment> calculatePayments() {
 		// Meant to be overrided
 		List<Payment> payments = new ArrayList<Payment>();
-
 		float periodRate = getRateForPeriod();
 		int periodCount = getNumberOfPeriods();
 		float loanPayment = getLoanAmount() / periodCount;
 
-		int currentYear = Year.now().getValue();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		int currentMonth = cal.get(Calendar.MONTH);
-
-		int paymentYear = currentYear;
-		int paymentMonth = currentMonth + 1;
-
 		float balance = getLoanAmount();
-		for (int month = 1; month < periodCount + 1; month++) {
+
+		LocalDate startDate = LocalDate.now();
+
+		float rate = getYearlyRate();
+		for (int i = 0; i < periodCount; i++) {
 			float interest = balance * periodRate;
 			float totalPayment = loanPayment + interest;
 			balance -= loanPayment;
-			paymentMonth += 1;
 
-			if (paymentMonth > 12) {
-				paymentYear += 1;
-				paymentMonth = 1;
-			}
+			Payment payment = new Payment(i + 1, startDate, rate, interest, loanPayment, totalPayment);
+			payments.add(payment);
 
-			payments.add(new Payment(month, paymentYear, paymentMonth, getYearlyRate(), interest, loanPayment,
-					totalPayment));
+			startDate = startDate.plusMonths(1);
 		}
 
 		return payments;
-	}
-
-	@Override
-	public List<Payment> calculateDeferredPayments(List<Payment> payments, LocalDate deferStart, int deferMonthsCount) {
-		if (payments == null || payments.isEmpty()) {
-			return null;
-		}
-		List<Payment> deferredPayments = new ArrayList<Payment>(payments.size() + deferMonthsCount);
-
-		return deferredPayments;
 	}
 }

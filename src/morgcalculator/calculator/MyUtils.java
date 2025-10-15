@@ -25,8 +25,8 @@ public class MyUtils {
 
 		StringBuilder sb = new StringBuilder();
 		// Headers
-		sb.append("id,").append("year,").append("month,").append("percent,").append("interest,")
-				.append("periodPayment,").append("totalPayment").append("\n");
+		sb.append("id,").append("date,").append("percent,").append("interest,").append("periodPayment,")
+				.append("totalPayment").append("\n");
 		// Data
 		dataList.forEach(payment -> sb.append(payment + "\n"));
 

@@ -9,9 +9,11 @@ public class MortgageCalculator {
 	};
 
 	private float loanAmount;
+	// TODO change to double
 	private float yearlyRate;
 	private int loanTermYear;
 	private int loanTermMonth;
+	private Defer defer;
 
 	public MortgageCalculator(float loanAmount, float yearlyRate, int loanTermYear, int loanTermMonth) {
 		this.loanAmount = loanAmount;
@@ -55,6 +57,14 @@ public class MortgageCalculator {
 		this.loanTermMonth = loanTermMonth;
 	}
 
+	public Defer getDefer() {
+		return defer;
+	}
+
+	public void setDefer(Defer defer) {
+		this.defer = defer;
+	}
+
 	// Other
 	public static Schedule getSchedule(int type) {
 		if (type == 0) {
@@ -65,8 +75,8 @@ public class MortgageCalculator {
 		return null;
 	}
 
-	protected float getRateForPeriod() {
-		return yearlyRate / 100 / 12;
+	protected float getRateForPeriod(float rate) {
+		return rate / 100 / 12;
 	}
 
 	protected int getNumberOfPeriods() {

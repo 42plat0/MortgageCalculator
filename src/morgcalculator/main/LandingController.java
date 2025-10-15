@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -26,6 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import morgcalculator.calculator.AnnuityCalculator;
+import morgcalculator.calculator.Defer;
 import morgcalculator.calculator.LinearCalculator;
 import morgcalculator.calculator.MortgageCalculator;
 import morgcalculator.calculator.MyUtils;
@@ -162,11 +165,16 @@ public class LandingController {
 		TableColumn idCol = new TableColumn("#");
 		idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-		TableColumn yearCol = new TableColumn("Metai");
-		yearCol.setCellValueFactory(new PropertyValueFactory<>("year"));
-
-		TableColumn monthCol = new TableColumn("Mėnesis");
-		monthCol.setCellValueFactory(new PropertyValueFactory<>("month"));
+		TableColumn dateCol = new TableColumn("Data");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
+		dateCol.setCellFactory(column -> new TableCell<Payment, LocalDate>() {
+			@Override
+			protected void updateItem(LocalDate item, boolean isEmpty) {
+				super.updateItem(item, isEmpty);
+				setText(item == null || isEmpty ? null : formatter.format(item));
+			}
+		});
 
 		TableColumn percentCol = new TableColumn("%");
 		percentCol.setCellValueFactory(new PropertyValueFactory<>("percent"));
@@ -183,8 +191,8 @@ public class LandingController {
 		TableColumn payCol = new TableColumn("");
 		payCol.setCellValueFactory(new PropertyValueFactory<>("payBtn"));
 
-		loanPaymentTable.getColumns().addAll(idCol, yearCol, monthCol, percentCol, interestCol, periodPaymentCol,
-				totalCol, payCol);
+		loanPaymentTable.getColumns().addAll(idCol, dateCol, percentCol, interestCol, periodPaymentCol, totalCol,
+				payCol);
 
 	}
 
@@ -292,14 +300,16 @@ public class LandingController {
 			deferredPayments.clear();
 		}
 
-		LocalDate from = deferDateFrom.getValue();
-		Integer monthCount = Integer.valueOf(deferMonthCount.getText());
-
 		if (!loanPaymentTable.getItems().isEmpty()) {
 			loanPaymentTable.getItems().clear();
 		}
 
-		deferredPayments = calculator.calculateDeferredPayments(payments, from, loanScheduleInput);
+		Integer lengthMonths = Integer.valueOf(deferMonthCount.getText());
+		Float rate = Float.valueOf(deferRate.getText());
+		Defer defer = new Defer(deferDateFrom.getValue(), lengthMonths, rate);
+		calculator.setDefer(defer);
+		deferredPayments = calculator.calculatePayments();
+		calculator.setDefer(null);
 
 		Payment lastRowInfo = new Payment(0f);
 		for (Payment payment : deferredPayments) {

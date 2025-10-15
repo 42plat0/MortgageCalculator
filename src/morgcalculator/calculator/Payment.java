@@ -12,26 +12,24 @@ import javafx.scene.control.TableView;
 
 public class Payment {
 	private Integer id;
-	private Integer year;
-	private Integer month;
 	private Float percent;
 	private Float interest;
 	private Float periodPayment;
 	private Float totalPayment;
+	private LocalDate date;
 
 	public Button payBtn;
 	public TableView parentContainer;
 	private Integer placeInMonth; // used for graph
 
-	public Payment(Integer id, Integer year, Integer month, Float percent, Float interest, Float periodPayment,
-			Float totalPayment) {
+	public Payment(Integer id, LocalDate date, Float percent, Float interest, Float periodPayment, Float totalPayment) {
 		this.id = id;
-		this.year = year;
-		this.month = month;
 		this.percent = percent;
 		this.interest = interest;
 		this.periodPayment = periodPayment;
 		this.totalPayment = totalPayment;
+		this.date = date;
+
 		this.payBtn = new Button("payBtn");
 		this.payBtn.setOnAction(getOnAction());
 		this.payBtn.setText("Mokėti");
@@ -44,14 +42,6 @@ public class Payment {
 
 	public Integer getId() {
 		return id;
-	}
-
-	public Integer getYear() {
-		return year;
-	}
-
-	public Integer getMonth() {
-		return month;
 	}
 
 	public Float getPercent() {
@@ -68,6 +58,10 @@ public class Payment {
 
 	public Float getTotalPayment() {
 		return totalPayment;
+	}
+
+	public LocalDate getDate() {
+		return date;
 	}
 
 	public void setTotalPayment(Float totalPayment) {
@@ -94,8 +88,7 @@ public class Payment {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(id == null ? "" : id).append(",");
-		sb.append(year == null ? "" : year).append(",");
-		sb.append(month == null ? "" : month).append(",");
+		sb.append(date == null ? "" : date).append(",");
 		sb.append(percent == null ? "" : percent).append(",");
 		sb.append(interest == null ? "" : interest).append(",");
 		sb.append(periodPayment == null ? "" : periodPayment).append(",");
@@ -108,10 +101,6 @@ public class Payment {
 			return new XYChart.Data(placeInMonth, totalPayment);
 		}
 		return null;
-	}
-
-	private LocalDate getDate() {
-		return LocalDate.of(this.year, this.month, 28);
 	}
 
 	public boolean isInDateRange(LocalDate from, LocalDate to) {

@@ -1,10 +1,7 @@
 package morgcalculator.calculator;
 
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class AnnuityCalculator extends MortgageCalculator {
@@ -17,61 +14,83 @@ public class AnnuityCalculator extends MortgageCalculator {
 	public List<Payment> calculatePayments() {
 		// Meant to be overrided
 		List<Payment> payments = new ArrayList<Payment>();
-		float periodRate = getRateForPeriod();
+
+		List<Payment> deferredPayments = new ArrayList<Payment>();
 		int periodCount = getNumberOfPeriods();
-
-		int currentYear = Year.now().getValue();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		int currentMonth = cal.get(Calendar.MONTH);
-
-		int paymentYear = currentYear;
-		int paymentMonth = currentMonth + 1;
-
 		float balance = getLoanAmount();
-		float constantPaymentEachMonth = (float) getPeriodPayment();
-		for (int month = 1; month < periodCount + 1; month++) {
+		float rate = getYearlyRate();
+		LocalDate startDate = LocalDate.now();
+		float periodRate = getRateForPeriod(rate);
+
+		Defer defer = getDefer();
+
+		if (defer != null) {
+			LocalDate date = defer.getDate();
+			float constantPaymentEachMonth = (float) getPeriodPayment(balance, getRateForPeriod(defer.getRate()),
+					defer.getLengthMonths());
+
+			for (int i = 0; i < periodCount; i++) {
+
+				float interest = balance * periodRate;
+				float principal = constantPaymentEachMonth - interest;
+
+				if (defer != null && defer.getDate().compareTo(startDate) < 30) {
+					Integer lengthDefer = defer.getLengthMonths();
+					for (int deferI = 0; deferI < lengthDefer; deferI++) {
+						constantPaymentEachMonth = (float) getPeriodPayment(balance, getRateForPeriod(defer.getRate()),
+								lengthDefer);
+						principal = constantPaymentEachMonth - interest;
+						Payment payment = new Payment(deferI + 1, startDate, defer.getRate(), interest, principal,
+								constantPaymentEachMonth);
+						payments.add(payment);
+						startDate = startDate.plusMonths(1);
+						balance -= principal;
+					}
+					continue;
+				}
+
+				Payment payment = new Payment(i + 1, startDate, rate, interest, principal, constantPaymentEachMonth);
+				payments.add(payment);
+
+				startDate = startDate.plusMonths(1);
+				balance -= principal;
+			}
+
+		}
+
+		float constantPaymentEachMonth = (float) getPeriodPayment(balance, periodRate, periodCount);
+		for (int i = 0; i < periodCount; i++) {
+			float constantPaymentEachMonth = (float) getPeriodPayment(balance, periodRate, periodCount);
+
 			float interest = balance * periodRate;
 			float principal = constantPaymentEachMonth - interest;
 
-			payments.add(new Payment(month, paymentYear, paymentMonth, getYearlyRate(), interest, principal,
-					constantPaymentEachMonth));
-
-			paymentMonth += 1;
-			if (paymentMonth > 12) {
-				paymentYear += 1;
-				paymentMonth = 1;
+			if (defer != null && defer.getDate().compareTo(startDate) < 30) {
+				Integer lengthDefer = defer.getLengthMonths();
+				for (int deferI = 0; deferI < lengthDefer; deferI++) {
+					constantPaymentEachMonth = (float) getPeriodPayment(balance, getRateForPeriod(defer.getRate()),
+							lengthDefer);
+					principal = constantPaymentEachMonth - interest;
+					Payment payment = new Payment(deferI + 1, startDate, defer.getRate(), interest, principal,
+							constantPaymentEachMonth);
+					payments.add(payment);
+					startDate = startDate.plusMonths(1);
+					balance -= principal;
+				}
+				continue;
 			}
+
+			Payment payment = new Payment(i + 1, startDate, rate, interest, principal, constantPaymentEachMonth);
+			payments.add(payment);
+
+			startDate = startDate.plusMonths(1);
 			balance -= principal;
 		}
 
 		return payments;
 	}
 
-	@Override
-	public List<Payment> calculateDeferredPayments(List<Payment> payments, LocalDate deferStart, int deferMonthsCount) {
-		if (payments == null || payments.isEmpty()) {
-			return null;
-		}
-		// Atidejimas turi priimti procenta, t.y. nauja metini procenta, kuri mokes tuos
-		// menesius.
-
-		List<Payment> deferredPayments = new ArrayList<Payment>(payments.size() + deferMonthsCount);
-
-		for (Payment payment : payments) {
-			deferredPayments.add(payment);
-
-		}
-
-		return deferredPayments;
-	}
-
-	private double getPeriodPayment() {
-		float totalAmount = getLoanAmount();
-		float periodRate = getRateForPeriod();
-		float periodCount = getNumberOfPeriods();
-
-		return totalAmount * (periodRate * Math.pow(1 + periodRate, periodCount))
-				/ (Math.pow(1 + periodRate, periodCount) - 1);
+	private double getPeriodPayment(float totalAmount, float rate, float periodCount) {
+		return totalAmount * (rate * Math.pow(1 + rate, periodCount)) / (Math.pow(1 + rate, periodCount) - 1);
 	}
 }
