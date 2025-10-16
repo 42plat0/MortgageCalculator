@@ -190,11 +190,14 @@ public class LandingController {
 		TableColumn totalCol = new TableColumn("Viso mokėti");
 		totalCol.setCellValueFactory(new PropertyValueFactory<>("totalPayment"));
 
+		TableColumn payedInTotalCol = new TableColumn("Sumoketa");
+		payedInTotalCol.setCellValueFactory(new PropertyValueFactory<>("payedInTotal"));
+
 		TableColumn payCol = new TableColumn("");
 		payCol.setCellValueFactory(new PropertyValueFactory<>("payBtn"));
 
 		loanPaymentTable.getColumns().addAll(idCol, dateCol, percentCol, interestCol, periodPaymentCol, totalCol,
-				payCol);
+				payedInTotalCol, payCol);
 
 	}
 

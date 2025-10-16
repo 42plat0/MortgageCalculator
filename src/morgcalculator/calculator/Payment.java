@@ -16,6 +16,7 @@ public class Payment {
 	private Float interest;
 	private Float periodPayment;
 	private Float totalPayment;
+	private Float payedInTotal;
 	private LocalDate date;
 
 	public Button payBtn;
@@ -29,6 +30,21 @@ public class Payment {
 		this.periodPayment = periodPayment;
 		this.totalPayment = totalPayment;
 		this.date = date;
+
+		this.payBtn = new Button("payBtn");
+		this.payBtn.setOnAction(getOnAction());
+		this.payBtn.setText("Mokėti");
+	}
+
+	public Payment(Integer id, LocalDate date, Float percent, Float interest, Float periodPayment, Float totalPayment,
+			Float payedInTotal) {
+		this.id = id;
+		this.percent = percent;
+		this.interest = interest;
+		this.periodPayment = periodPayment;
+		this.totalPayment = totalPayment;
+		this.date = date;
+		this.payedInTotal = payedInTotal;
 
 		this.payBtn = new Button("payBtn");
 		this.payBtn.setOnAction(getOnAction());
@@ -62,6 +78,14 @@ public class Payment {
 
 	public Float getTotalPayment() {
 		return totalPayment;
+	}
+
+	public void setPayedInTotal(Float payedInTotal) {
+		this.payedInTotal = payedInTotal;
+	}
+
+	public Float getPayedInTotal() {
+		return payedInTotal;
 	}
 
 	public LocalDate getDate() {

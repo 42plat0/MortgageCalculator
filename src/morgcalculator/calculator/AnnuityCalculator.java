@@ -26,26 +26,32 @@ public class AnnuityCalculator extends MortgageCalculator {
 		Defer defer = getDefer();
 		LocalDate deferStartDate = null;
 		LocalDate deferEndDate = null;
+		Float payedInTotal = 0f;
 
 		float constantPaymentEachMonth = (float) getPeriodPayment(balance, periodRate, periodCount);
 
 		if (defer != null) {
 			deferStartDate = defer.getDate();
 			deferEndDate = deferStartDate.plusMonths(defer.getLengthMonths());
-			LocalDate defEndClone = deferEndDate;
-			periodCount += defer.getLengthMonths();
+			LocalDate defEndClone = deferStartDate;
 			for (int i = 0; i < defer.getLengthMonths(); i++) {
-				float paymentThisMonth = constantPaymentEachMonth * (defer.getRate() / 100f);
 				float interest = balance * periodRate;
+				float paymentThisMonth = constantPaymentEachMonth * (defer.getRate() / 100f) + interest;
 				float principal = paymentThisMonth - interest;
+				payedInTotal += paymentThisMonth;
+				System.out.println("i: " + i + " principal: " + principal);
 				Payment payment = new Payment(i + 1, defEndClone, defer.getRate(), interest, principal,
-						paymentThisMonth);
+						paymentThisMonth, payedInTotal);
 				deferredPayments.add(payment);
 				defEndClone = defEndClone.plusMonths(1);
 				balance -= principal;
 			}
 		}
 
+		constantPaymentEachMonth = (float) getPeriodPayment(balance, periodRate, periodCount);
+		if (defer != null) {
+			periodCount += defer.getLengthMonths();
+		}
 		for (int i = 0; i < periodCount; i++) {
 			boolean isDeferement = defer != null && !startDate.isBefore(deferStartDate)
 					&& !startDate.isAfter(deferEndDate);
@@ -53,13 +59,13 @@ public class AnnuityCalculator extends MortgageCalculator {
 			float interest = balance * periodRate;
 			float paymentThisMonth = constantPaymentEachMonth;
 			float principal = paymentThisMonth - interest;
-
 			if (isDeferement) {
 				startDate = startDate.plusMonths(1);
 				continue;
 			}
 
-			Payment payment = new Payment(i + 1, startDate, rate, interest, principal, paymentThisMonth);
+			payedInTotal += paymentThisMonth;
+			Payment payment = new Payment(i + 1, startDate, rate, interest, principal, paymentThisMonth, payedInTotal);
 			normalPayments.add(payment);
 
 			startDate = startDate.plusMonths(1);
